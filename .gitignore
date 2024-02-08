@@ -1,0 +1,4 @@
+UI/
+*.dll
+*.lib
+out/
