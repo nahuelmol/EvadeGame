@@ -1,9 +1,9 @@
+#include <vector>
 #include "utils.cpp"
 
 class NPC {
 
 	public:
-
 		float xlocation, ylocation;
 		int level;
 		void* memory;
@@ -16,8 +16,6 @@ class NPC {
 			this -> ylocation = ylocation;
 			this -> level = level;
 		}
-
-
 };
 
 
@@ -29,6 +27,7 @@ class Render_State : public NPC {
 
     	BITMAPINFO bitmap_info;
 };
+
 
 const char g_szClassName[] = "GAME CLASS";
 
@@ -43,6 +42,9 @@ global_variable Render_State render_state;
 #include "platform.cpp"
 #include "builder.cpp"
 #include "game.cpp"
+
+std::vector<Nova*> Novas;
+std::vector<Killer*> Killers;
 
 void InitializeDebuggerConsole(){
 	AllocConsole();
@@ -65,16 +67,25 @@ LRESULT CALLBACK wnd_simulator(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
         case WM_KEYDOWN: 
         {
             if(wparam >= 48 && wparam <= 57){
-                
                 char digit = static_cast<char>(wparam);
                 std::string mystr(1,digit);
                 
                 input.numbuffer += mystr;
 
+            } else if(wparam >= 65 && wparam <= 90) {
+                
+                Nova* mynova = new Nova();
+                mynova->setProps(0,0,4,4);
+
+                Novas.push_back(mynova);
+                size_t novas_count = Novas.size();
+                if(novas_count >= 10){
+                    cout << "you have reached the maximum enemies per level" << endl;
+                }
+
             } else {
                 
                 switch(wparam){
-                
                     case VK_UP:
                         input.buttons[BUTTON_UP].is_down = true;
                         input.buttons[BUTTON_UP].changed = true;
@@ -209,6 +220,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,LPSTR lpCmdLine,
             DispatchMessage(&message);
         }
         
+        if(Novas.size() > 0){
+            simulate_enemy(Novas);
+        }
+
         
         simulate_game(&input);
         StretchDIBits(hdc, 0, 0, render_state.width, render_state.height, 0, 0, render_state.width, render_state.height, render_state.memory, &render_state.bitmap_info, DIB_RGB_COLORS, SRCCOPY);

@@ -1,10 +1,20 @@
+internal void
+simulate_enemy(std::vector<Nova*>& enemies){
+    using std::cout;
+    using std::endl;
+    
+
+    for(auto& enemy: enemies){
+        clear_screen(0xff5500);
+	    draw_rect(enemy->pos_x, enemy->pos_y, enemy->width, enemy->height, 0x7611c3);
+    }
+}
 
 internal void 
 simulate_game(Input *input){
     using std::cout;
     using std::endl;
 
-    cout << "nbuffer:" << input->numbuffer << endl;
     int step = 1;
     if(input->buttons[BUTTON_UP].is_down){
         if((input->numbuffer) == ""){
@@ -43,6 +53,6 @@ simulate_game(Input *input){
     }
     
     clear_screen(0xff5500);
-	draw_rect(input->pos_x, input->pos_y, 1, 1, 0x7611c3);
+	draw_rect(input->pos_x, input->pos_y, input->width, input->height, 0x7611c3);
 }
 
