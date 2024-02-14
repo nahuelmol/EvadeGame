@@ -1,3 +1,17 @@
+enum {
+    BUTTON_I,
+    BUTTON_J,
+    BUTTON_K,
+    BUTTON_L,
+
+    BUTTON_EN,
+};
+
+struct Button_State {
+	bool is_down = false;
+	bool changed = false;
+};
+
 class MoveBehavior {
     public:
         virtual void move() const = 0; 
@@ -31,10 +45,16 @@ class Shooting: public Attack {
 
 class Enemy {
     public:
-        float pos_x = 0;
-        float pos_y = 0;
-        float width = 2;
-        float height =2;
+        
+        Button_State buttons[BUTTON_EN];
+        
+        float pos_x;
+        float pos_y;
+        float width;
+        float height;
+        
+        std::string name;
+        int id;
 
         MoveBehavior* moveBehavior;
         Attack* attackBehavior;
@@ -56,15 +76,32 @@ class Enemy {
             attackBehavior = att;
         }
         
+        void setID(int id){
+            this->id = id;
+            this->name = this->name + std::to_string(id);
+        }
+        
+        void setProps(float x, float y, float width, float height){
+            this->pos_x= x;
+            this->pos_y= y;
+            this->width=width;
+            this->height=height;
+        }
+        
+        void props(){
+            std::cout << this->pos_x << std::endl;
+            std::cout << this->pos_y << std::endl;
+            std::cout << this->width << std::endl;
+            std::cout << this->height<< std::endl;
+        }
 };
 
 class Nova: public Enemy{
+    
     public:
-        float x = 0;
-        float y = 0;
-        float width = 4;
-        float height =4;
-
+        std::string name = "NOVA";
+        int id;
+    
     public:
         Nova(){
             moveBehavior    = new UpDown();
@@ -74,20 +111,8 @@ class Nova: public Enemy{
         void Hello(){
             std::cout << "Hi, I am nova" << std::endl;
         }
-        
-        void setProps(float x, float y, float width, float height){
-            this->x= x;
-            this->y= y;
-            this->width=width;
-            this->height=height;
-        }
 
-        void props(){
-            std::cout << this->x << std::endl;
-            std::cout << this->y << std::endl;
-            std::cout << this->width << std::endl;
-            std::cout << this->height<< std::endl;
-        }
+        
 };
 
 class Killer: public Enemy {
@@ -98,10 +123,8 @@ class Killer: public Enemy {
         }
 };
 
-struct Button_State {
-	bool is_down;
-	bool changed;
-};
+
+
 
 enum {
 	BUTTON_UP,
@@ -113,7 +136,7 @@ enum {
 };
 
 struct Input {
-	float pos_x = 0;
+	float pos_x = -40;
     float pos_y = 0;
  
     float width = 4;

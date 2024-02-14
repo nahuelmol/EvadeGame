@@ -2,7 +2,6 @@
 #include "utils.cpp"
 
 class NPC {
-
 	public:
 		float xlocation, ylocation;
 		int level;
@@ -20,7 +19,6 @@ class NPC {
 
 
 class Render_State : public NPC {
-
 	public:
 		int height, width;
     	void* memory;
@@ -34,10 +32,6 @@ const char g_szClassName[] = "GAME CLASS";
 global_variable bool running = true;
 
 global_variable Render_State render_state;
-
-//global_variable float x = 0;
-//global_variable float y = 0;
-
 
 #include "platform.cpp"
 #include "builder.cpp"
@@ -72,15 +66,35 @@ LRESULT CALLBACK wnd_simulator(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
                 
                 input.numbuffer += mystr;
 
-            } else if(wparam >= 65 && wparam <= 90) {
+            } else if(wparam == 65) {
                 
                 Nova* mynova = new Nova();
                 mynova->setProps(0,0,4,4);
 
                 Novas.push_back(mynova);
-                size_t novas_count = Novas.size();
-                if(novas_count >= 10){
-                    cout << "you have reached the maximum enemies per level" << endl;
+                size_t index = Novas.size();
+                mynova->setID(index);
+                //if(novas_count >= 10){
+                //    cout << "you have reached the maximum enemies per level" << endl;
+                //}
+            } else if(wparam >= 73 && wparam <= 76){
+                size_t novasize = Novas.size();
+                if(novasize > 0){
+                    if(wparam == 'J'){
+                        Novas[0]->buttons[BUTTON_J].is_down = true;
+                    }    
+                    
+                    if(wparam == 'K'){
+                        Novas[0]->buttons[BUTTON_K].is_down = true;
+                    } 
+                    
+                    if(wparam == 'I'){
+                        Novas[0]->buttons[BUTTON_I].is_down = true;
+                    }
+
+                    if(wparam == 'L'){
+                        Novas[0]->buttons[BUTTON_L].is_down = true;
+                    }       
                 }
 
             } else {
@@ -108,27 +122,49 @@ LRESULT CALLBACK wnd_simulator(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
         } break;
         case WM_KEYUP:
         {
-            switch(wparam){
-                case VK_UP:
-                {
-                    input.buttons[BUTTON_UP].is_down = false;
-                    input.numbuffer = "";
-                } break;
+            if(wparam >= 73 && wparam <= 76){
+                size_t novasize = Novas.size();
+                if(novasize > 0){
+                    if(wparam == 'J'){
+                        Novas[0]->buttons[BUTTON_J].is_down = false;
+                    }
+                
+                    if(wparam == 'K'){
+                        Novas[0]->buttons[BUTTON_K].is_down = false;
+                    }
 
-                case VK_DOWN:
-                    input.buttons[BUTTON_DOWN].is_down = false;
-                    input.numbuffer = "";
-                break;
+                    if(wparam == 'I'){
+                        Novas[0]->buttons[BUTTON_I].is_down = false;
+                    }
 
-                case VK_LEFT:
-                    input.buttons[BUTTON_LEFT].is_down = false;
-                    input.numbuffer = "";
-                break;
+                    if(wparam == 'L'){
+                        Novas[0]->buttons[BUTTON_L].is_down = false;
+                    }
+                }
+            } else {
 
-                case VK_RIGHT:
-                    input.buttons[BUTTON_RIGHT].is_down = false;
-                    input.numbuffer = "";
-                break;
+                switch(wparam){
+                    case VK_UP:
+                    {
+                        input.buttons[BUTTON_UP].is_down = false;
+                        input.numbuffer = "";
+                    } break;
+
+                    case VK_DOWN:
+                        input.buttons[BUTTON_DOWN].is_down = false;
+                        input.numbuffer = "";
+                    break;
+
+                    case VK_LEFT:
+                        input.buttons[BUTTON_LEFT].is_down = false;
+                        input.numbuffer = "";
+                    break;
+
+                    case VK_RIGHT:
+                        input.buttons[BUTTON_RIGHT].is_down = false;
+                        input.numbuffer = "";
+                    break;
+                }
             }
         } break;
         case WM_SIZE:
@@ -220,12 +256,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,LPSTR lpCmdLine,
             DispatchMessage(&message);
         }
         
-        if(Novas.size() > 0){
+        /*if(Novas.size() > 0){
             simulate_enemy(Novas);
-        }
+        }*/
 
         
-        simulate_game(&input);
+        simulate_game(&input, Novas);
         StretchDIBits(hdc, 0, 0, render_state.width, render_state.height, 0, 0, render_state.width, render_state.height, render_state.memory, &render_state.bitmap_info, DIB_RGB_COLORS, SRCCOPY);
 
         /*
