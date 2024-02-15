@@ -1,5 +1,6 @@
 #include <vector>
 #include "utils.cpp"
+#include "entities/obstacles.cpp"
 
 class NPC {
 	public:
@@ -48,6 +49,9 @@ void InitializeDebuggerConsole(){
 Input input = {};
 char* buffer = new char[10];
 
+std::vector<Block*> Obstacles;
+
+
 LRESULT CALLBACK wnd_simulator(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam ){
 
     using std::cout;
@@ -74,28 +78,73 @@ LRESULT CALLBACK wnd_simulator(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
                 Novas.push_back(mynova);
                 size_t index = Novas.size();
                 mynova->setID(index);
-                //if(novas_count >= 10){
-                //    cout << "you have reached the maximum enemies per level" << endl;
-                //}
+
             } else if(wparam >= 73 && wparam <= 76){
                 size_t novasize = Novas.size();
                 if(novasize > 0){
                     if(wparam == 'J'){
                         Novas[0]->buttons[BUTTON_J].is_down = true;
+                        Novas[0]->buttons[BUTTON_J].changed = true;
                     }    
                     
                     if(wparam == 'K'){
                         Novas[0]->buttons[BUTTON_K].is_down = true;
+                        Novas[0]->buttons[BUTTON_K].changed = true;
                     } 
                     
                     if(wparam == 'I'){
                         Novas[0]->buttons[BUTTON_I].is_down = true;
+                        Novas[0]->buttons[BUTTON_I].changed = true;
                     }
 
                     if(wparam == 'L'){
                         Novas[0]->buttons[BUTTON_L].is_down = true;
+                        Novas[0]->buttons[BUTTON_L].changed = true;
                     }       
                 }
+
+            } else if(wparam == 'C'){
+                if(input.capture_mode != true){
+                    input.phantom_mode = false;
+                    input.dancing_mode = false;
+                    input.capture_mode = true;
+                    
+                    input.color = COLOR_RED;
+                    input.mode_switch = true;
+                } else {
+                    input.mode_switch = false;
+                }
+            } else if(wparam =='D'){
+                if(input.dancing_mode != true){
+                    input.dancing_mode = true;
+                    input.phantom_mode = false;
+                    input.capture_mode = false;
+
+                    input.color = COLOR_LILE;
+                    input.mode_switch = true;
+                } else {
+                    input.mode_switch = false;
+                }
+            } else if(wparam =='F'){
+                if(input.phantom_mode != true){
+                    input.phantom_mode = true;
+                    input.dancing_mode = false;
+                    input.capture_mode = false;
+
+                    input.color = COLOR_BLUE;
+                    input.mode_switch = true;
+                } else {
+                    input.mode_switch = false;
+                }
+            } else if(wparam == 'O'){
+                Block* myblock = new Block();
+                Obstacles.push_back(myblock);
+                
+                myblock->pos_x = 0;
+                myblock->pos_y = 0;
+                myblock->width = 7;
+                myblock->height =3; 
+                myblock->new_block = true;
 
             } else {
                 
@@ -107,14 +156,17 @@ LRESULT CALLBACK wnd_simulator(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 
                     case VK_DOWN:
                         input.buttons[BUTTON_DOWN].is_down = true;
+                        input.buttons[BUTTON_DOWN].changed = true;
                     break;
 
                     case VK_LEFT:
                         input.buttons[BUTTON_LEFT].is_down = true;
+                        input.buttons[BUTTON_LEFT].changed = true;
                     break;
 
                     case VK_RIGHT:
                         input.buttons[BUTTON_RIGHT].is_down = true;
+                        input.buttons[BUTTON_RIGHT].changed = true;
                     break;
                 }
             }
@@ -261,7 +313,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,LPSTR lpCmdLine,
         }*/
 
         
-        simulate_game(&input, Novas);
+        simulate_game(&input, Novas, Obstacles);
         StretchDIBits(hdc, 0, 0, render_state.width, render_state.height, 0, 0, render_state.width, render_state.height, render_state.memory, &render_state.bitmap_info, DIB_RGB_COLORS, SRCCOPY);
 
         /*

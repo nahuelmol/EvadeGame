@@ -31,6 +31,13 @@ class UpDown: public MoveBehavior {
         }
 };
 
+class Circles: public MoveBehavior {
+    public:
+        void move() const override {
+            std::cout << "moving in circles" << std::endl;
+        }
+};
+
 class Attack {
     public:
         virtual void attack() const = 0;
@@ -40,6 +47,13 @@ class Shooting: public Attack {
     public:
         void attack() const override {
             std::cout << "shooting" << std::endl;
+        }
+};
+
+class Colision: public Attack {
+    public:
+        void attack() const override {
+            std::cout << "coliding" << std::endl;
         }
 };
 
@@ -115,6 +129,14 @@ class Nova: public Enemy{
         
 };
 
+class Bee: public Enemy {
+    public:
+        Bee(){
+            moveBehavior    = new Circles();
+            attackBehavior  = new Colision();
+        }
+};
+
 class Killer: public Enemy {
     public:
         Killer(){
@@ -141,6 +163,14 @@ struct Input {
  
     float width = 4;
     float height =4;
+    
+    bool phantom_mode = false;
+    bool capture_mode = false;
+    bool dancing_mode = true;
+
+    bool mode_switch = false;
+
+    u32 color = COLOR_LILE; 
 
     std::string numbuffer = "";
 

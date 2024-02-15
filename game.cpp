@@ -1,11 +1,11 @@
 
 
 internal void 
-simulate_game(Input *input,std::vector<Nova*>& enemies){
+simulate_game(Input *input,std::vector<Nova*>& enemies, std::vector<Block*>& Blocks){
     using std::cout;
     using std::endl;
 
-    clear_screen(0xff5500);
+    clear_screen(COLOR_DARK_GRAY);
     
     int step = 1;
     if(input->buttons[BUTTON_UP].is_down){
@@ -47,11 +47,15 @@ simulate_game(Input *input,std::vector<Nova*>& enemies){
         }
     }
     
-       
-    
 
     if(enemies.size() > 0){
-        cout << enemies.size() << " enemies" << endl;
+        for(int i;i<BUTTON_COUNT;i++){
+            if(enemies[0]->buttons[i].changed){
+                cout << enemies.size() << " enemies" << endl;
+                enemies[0]->buttons[i].changed = false;
+            }
+        }
+        
 
         if(enemies[0]->buttons[BUTTON_J].is_down){
             (enemies[0]->pos_x)-=1;
@@ -73,6 +77,36 @@ simulate_game(Input *input,std::vector<Nova*>& enemies){
 
     } 
     
-	draw_rect(input->pos_x, input->pos_y, input->width, input->height, 0x7611c3);
+    for(int i;i<BUTTON_COUNT; i++){
+        if(input->mode_switch == true){
+
+            if(input->phantom_mode == true){
+                cout << "entering phantom" << endl;
+            } else if(input->capture_mode == true){
+                cout << "entering capturer"<< endl;
+            } else if(input->dancing_mode== true){
+                cout << "entering dancer"  << endl;
+            }    
+            
+            input->mode_switch = false;
+        }
+    }
+
+    for(int i;i<BUTTON_COUNT;i++){
+        input->buttons[i].changed = false;
+    }
+    
+    if(Blocks.size() > 0){
+        for(auto& Block: Blocks){
+            draw_rect(Block->pos_x,Block->pos_y,Block->width,Block->height,Block->color);
+            if(Block->new_block){
+                cout << Blocks.size() << " blocks" << endl;
+                Block->new_block = false;
+            }
+        }
+        
+    }
+    
+	draw_rect(input->pos_x, input->pos_y, input->width, input->height, input->color);
 }
 
